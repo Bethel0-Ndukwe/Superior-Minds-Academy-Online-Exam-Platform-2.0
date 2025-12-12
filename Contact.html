@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - School Portal</title>
+    <link rel="stylesheet" href="css1/styles1.css">
+    <style>
+
+    </style>
+</head>
+<body>
+
+    <!-- NAVIGATION BAR -->
+    <header>
+      <div class="navbar">
+          <div>
+              <a href="index.html">Home</a>
+              <a href="about.html">About</a>
+              <a href="contact.html">Contact</a>
+          </div>
+      </div>
+    </header>
+
+
+    <div class="container">
+        <h2>Contact Us</h2>
+        <p style="text-align:center;">Please fill out the form below and we will reply as soon as possible.</p>
+
+        <!-- CONTACT FORM -->
+        <form action="https://formsubmit.co/bethelndukwe032@gmail.com" method="POST">
+
+            <!-- HONEY-POT TO STOP SPAM BOTS -->
+            <input type="hidden" name="_honey" style="display:none">
+
+            <!-- DISABLE CAPTCHA -->
+            <input type="hidden" name="_captcha" value="false">
+
+            <!-- REDIRECT AFTER SUBMISSION -->
+            <input type="hidden" name="_next" value="https://yourwebsite.com/success.html">
+
+            <div class="input-group">
+                <label>Your Name</label>
+                <input type="text" name="name" placeholder="Enter your name" required>
+            </div>
+
+            <div class="input-group">
+                <label>Your Email</label>
+                <input type="email" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <div class="input-group">
+                <label>Message</label>
+                <textarea name="message" placeholder="Write your message..." required></textarea>
+            </div>
+
+            <button type="submit">Send Message</button>
+        </form>
+    </div>
+
+</body>
+</html>

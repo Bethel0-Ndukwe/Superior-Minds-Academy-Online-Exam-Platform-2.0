@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<title>Superior Mind Academy – Exam Portal</title>
+<link rel="stylesheet" href="css1/styles1.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+  /* Modal styles for authentication and exam */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    overflow-y: auto;
+  }
+
+  .modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  .admin-modal .modal-content {
+    max-width: 900px;
+    margin: 2% auto;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .close {
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .close:hover {
+    color: red;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+
+  .form-group textarea {
+    font-family: monospace;
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+  }
+
+  .btn:hover {
+    background-color: #45a049;
+  }
+
+  .btn-secondary {
+    background-color: #6c757d;
+    width: auto;
+    margin: 5px;
+  }
+
+  .btn-secondary:hover {
+    background-color: #5a6268;
+  }
+
+  /* Updated Timer and Submit Button */
+  .timer {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 20px;
+    z-index: 999;
+    display: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  .timer.warning {
+    background-color: #ff9800;
+  }
+
+  .timer.danger {
+    background-color: #f44336;
+    animation: pulse 1s infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  /* Updated Submit Button */
+  .submit-btn {
+    background-color: #2196F3;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    display: none;
+    transition: all 0.3s;
+    position: fixed;
+    top: 160px;
+    right: 20px;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+    border: 2px solid white;
+  }
+
+  .submit-btn:hover {
+    background-color: #1976D2;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(33, 150, 243, 0.5);
+  }
+
+  .submit-btn:active {
+    transform: translateY(0);
+  }
+
+  .exam-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    display: none;
+  }
+
+  .question {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    border-left: 4px solid #4CAF50;
+  }
+
+  .question-number {
+    font-weight: bold;
+    color: #4CAF50;
+    margin-bottom: 10px;
+  }
+
+  .options label {
+    display: block;
+    margin-bottom: 10px;
+    padding: 12px;
+    background-color: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .options label:hover {
+    background-color: #f5f5f5;
+    border-color: #4CAF50;
+  }
+
+  .options input[type="radio"] {
+    margin-right: 10px;
+  }
+
+  .error {
+    color: #f44336;
+    font-size: 14px;
+    margin-top: 5px;
+    min-height: 20px;
+  }
+
+  .success {
+    color: #4CAF50;
+    font-size: 14px;
+    margin-top: 5px;
+    min-height: 20px;
+  }
+
+  .info {
+    color: #2196F3;
+    font-size: 14px;
+    margin-top: 5px;
+    min-height: 20px;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+  }
+
+  .loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #4CAF50;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .results-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    display: none;
+  }
+
+  .score-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: conic-gradient(#4CAF50 0% 70%, #f0f0f0 70% 100%);
+    margin: 20px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .score-text {
+    background-color: white;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .admin-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .admin-btn {
+    background-color: #673ab7;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  .admin-btn:hover {
+    background-color: #5e35b1;
+  }
+
+  .sync-status {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: #333;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 12px;
+    opacity: 0.9;
+    display: none;
+    z-index: 1000;
+  }
+
+  .sync-status.success {
+    background-color: #4CAF50;
+  }
+
+  .sync-status.error {
+    background-color: #f44336;
+  }
+
+  .sync-status.warning {
+    background-color: #ff9800;
+  }
+
+  .data-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 10px;
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .data-table th, .data-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+
+  .data-table th {
+    background-color: #f5f5f5;
+  }
+
+  /* Image in questions */
+  .question-image {
+    max-width: 100%;
+    max-height: 300px;
+    margin: 15px 0;
+    border-radius: 5px;
+    display: block;
+  }
+
+  /* Retake permission styles */
+  .permission-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 10px;
+  }
+
+  .permission-granted {
+    background-color: #4CAF50;
+    color: white;
+  }
+
+  .permission-denied {
+    background-color: #f44336;
+    color: white;
+  }
+
+  .permission-pending {
+    background-color: #ff9800;
+    color: white;
+  }
+
+  /* Exam duration controls */
+  .duration-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    align-items: center;
+  }
+
+  .duration-input {
+    width: 100px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  /* Modal for unanswered questions warning */
+  .warning-modal .modal-content {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    max-width: 500px;
+  }
+
+  .warning-modal h3 {
+    color: #856404;
+    margin-top: 0;
+  }
+
+  .warning-modal p {
+    color: #856404;
+  }
+
+  .warning-modal .unanswered-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 10px 0;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .warning-modal .unanswered-list li {
+    padding: 8px;
+    background-color: #fff;
+    border: 1px solid #ffeaa7;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .warning-modal .unanswered-list li:hover {
+    background-color: #f8f9fa;
+    border-color: #856404;
+  }
+
+  .warning-modal .modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: flex-end;
+  }
+
+  /* Subject card styles */
+  .subject-card, .class-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin: 10px;
+  }
+
+  /* Subject info box */
+  .subject-info {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    border-left: 4px solid #4CAF50;
+  }
+
+  .subject-info h5 {
+    margin-top: 0;
+    color: #333;
+  }
+
+  .subject-info ul {
+    margin: 10px 0 0 0;
+    padding-left: 20px;
+  }
+
+  .subject-info li {
+    margin-bottom: 5px;
+  }
+
+  /* Results filter */
+  .results-filter {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+  }
+
+  .filter-group {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .filter-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .filter-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  /* Auto-save indicator */
+  .save-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  .save-indicator.show {
+    opacity: 1;
+  }
+
+  .save-indicator.saving {
+    background-color: #2196F3;
+  }
+
+  .save-indicator.error {
+    background-color: #f44336;
+  }
+
+  /* Percentage input for submit button timing */
+  .percentage-input {
+    width: 80px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+  }
+
+  /* Grade display for students */
+  .grade-display {
+    font-size: 28px;
+    font-weight: bold;
+    color: #4CAF50;
+    margin: 20px 0;
+    text-align: center;
+  }
+
+  /* Score breakdown for students */
+  .score-breakdown {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 20px 0;
+  }
+
+  .score-breakdown p {
+    margin: 8px 0;
+  }
+</style>
+
+</head>
+<body>
+
+<header>
+  <img src="sma logo.png" class="logo" alt="Superior Mind Academy Logo">
+  <h1>Superior Mind Academy</h1>
+  <nav style="margin-left:auto; display:flex; gap:20px;">
+    <a href="index.html" style="color:white; text-decoration:none; font-weight:bold;">Home</a>
+    <a href="about.html" style="color:white; text-decoration:none; font-weight:bold;">About</a>
+    <a href="contact.html" style="color:white; text-decoration:none; font-weight:bold;">Contact</a>
+  </nav>
+</header>
+
+<!-- Sync Status -->
+<div id="syncStatus" class="sync-status"></div>
+
+<!-- Save Indicator -->
+<div id="saveIndicator" class="save-indicator"></div>
+
+<!-- Authentication Modal -->
+<div id="authModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('authModal')">&times;</span>
+    <h2>Student Authentication</h2>
+    <form id="authForm">
+      <div class="form-group">
+        <label for="admissionNumber">Admission Number</label>
+        <input type="text" id="admissionNumber" required placeholder="e.g., SMA2024001">
+        <div class="error" id="admissionError"></div>
+      </div>
+      <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" required placeholder="Enter your full name">
+        <div class="error" id="nameError"></div>
+      </div>
+      <div class="form-group">
+        <label for="class">Class</label>
+        <select id="class" required>
+          <option value="">Select Class</option>
+          <option value="Primary 1">Primary 1</option>
+          <option value="Primary 2">Primary 2</option>
+          <option value="Primary 3">Primary 3</option>
+          <option value="Primary 4">Primary 4</option>
+          <option value="Primary 5">Primary 5</option>
+          <option value="Primary 6">Primary 6</option>
+          <option value="JSS 1">JSS 1</option>
+          <option value="JSS 2">JSS 2</option>
+          <option value="JSS 3">JSS 3</option>
+        </select>
+        <div class="error" id="classError"></div>
+      </div>
+      <button type="submit" class="btn">Authenticate & Start Exam</button>
+      <div class="success" id="authSuccess"></div>
+      <div class="info" id="authInfo"></div>
+    </form>
+  </div>
+</div>
+
+<!-- Password Modal -->
+<div id="passwordModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('passwordModal')">&times;</span>
+    <h2>Admin Authentication</h2>
+    <form id="passwordForm">
+      <div class="form-group">
+        <label for="adminPassword">Admin Password</label>
+        <input type="password" id="adminPassword" required placeholder="Enter admin password">
+        <div class="error" id="passwordError"></div>
+      </div>
+      <button type="submit" class="btn">Authenticate</button>
+    </form>
+  </div>
+</div>
+
+<!-- Timer Display -->
+<div id="timer" class="timer">60:00</div>
+
+<!-- Submit Button (Fixed position) -->
+<button id="fixedSubmitBtn" class="submit-btn">📤 SUBMIT EXAM</button>
+
+<!-- Unanswered Questions Warning Modal -->
+<div id="unansweredWarningModal" class="modal warning-modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('unansweredWarningModal')">&times;</span>
+    <h3>⚠️ Unanswered Questions Detected</h3>
+    <p>You have <span id="unansweredCount">0</span> unanswered questions:</p>
+    <ul id="unansweredList" class="unanswered-list"></ul>
+    <p>Click on any question number above to go directly to that question.</p>
+    <div class="modal-buttons">
+      <button onclick="closeModal('unansweredWarningModal')" class="btn-secondary">Go Back to Exam</button>
+      <button onclick="forceSubmitExam()" class="btn" style="background-color: #f44336;">Submit Anyway</button>
+    </div>
+  </div>
+</div>
+
+<!-- Exam Container -->
+<div id="examContainer" class="exam-container">
+  <h2 id="examSubject"></h2>
+  <div id="questionsContainer"></div>
+</div>
+
+<!-- Results Container -->
+<div id="resultsContainer" class="results-container">
+  <h2 style="text-align: center; color: #4CAF50;">Exam Results</h2>
+
+  <!-- Grade Display (For Students) -->
+  <div class="grade-display" id="studentGradeDisplay"></div>
+
+  <div class="score-circle">
+    <div class="score-text">
+      <span id="scoreDisplay">0/0</span>
+      <span style="font-size: 14px;">Score</span>
+    </div>
+  </div>
+
+  <div class="score-breakdown">
+    <p><strong>Student:</strong> <span id="resultStudentName"></span></p>
+    <p><strong>Class:</strong> <span id="resultClassName"></span></p>
+    <p><strong>Subject:</strong> <span id="resultSubjectName"></span></p>
+    <p><strong>Correct Answers:</strong> <span id="resultScore"></span> out of <span id="resultTotal"></span></p>
+    <p><strong>Grade:</strong> <span id="resultGrade"></span></p>
+    <p><strong>Date:</strong> <span id="resultDate"></span></p>
+  </div>
+
+  <button onclick="returnToPortal()" class="btn" style="display: block; margin: 20px auto; width: 200px;">Return to Portal</button>
+</div>
+
+<!-- Admin Panel -->
+<div class="admin-panel">
+  <button class="admin-btn" onclick="showPasswordModal()">Admin</button>
+</div>
+
+<!-- Admin Modal -->
+<div id="adminModal" class="modal admin-modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('adminModal')">&times;</span>
+    <h2>Administrator Panel</h2>
+
+    <div style="margin-bottom: 20px;">
+      <button onclick="showTab('students')" class="btn-secondary">View Students</button>
+      <button onclick="showTab('exams')" class="btn-secondary">Manage Exams</button>
+      <button onclick="showTab('questions')" class="btn-secondary">View Questions</button>
+      <button onclick="showTab('results')" class="btn-secondary">View Results</button>
+      <button onclick="showTab('retakes')" class="btn-secondary">Retake Permissions</button>
+      <button onclick="showTab('settings')" class="btn-secondary">Settings</button>
+    </div>
+
+    <!-- Students Tab -->
+    <div id="studentsTab" style="display: none;">
+      <h3>Registered Students (From Google Sheets)</h3>
+      <div class="loading" id="studentsLoading">
+        <div class="loading-spinner"></div>
+        <p>Loading students data...</p>
+      </div>
+      <div id="studentsList"></div>
+      <div style="margin-top: 20px;">
+        <button onclick="syncStudents()" class="btn">Sync Students from Google Sheets</button>
+        <div class="info" style="margin-top: 10px;">Students are automatically loaded from Google Sheets. Click sync to refresh.</div>
+      </div>
+    </div>
+
+    <!-- Exams Tab -->
+    <div id="examsTab" style="display: none;">
+      <h3>Exam Schedule Management</h3>
+      <div id="currentExams">
+        <h4>Current Exam Settings</h4>
+        <div class="loading" id="examsLoading">
+          <div class="loading-spinner"></div>
+          <p>Loading exam settings...</p>
+        </div>
+        <div id="examsList"></div>
+      </div>
+
+      <div style="margin-top: 20px; padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
+        <h4>Set Exam Duration & Questions</h4>
+        <div class="form-group">
+          <label for="durationClass">Class</label>
+          <select id="durationClass">
+            <option value="">Select Class</option>
+            <option value="Primary 1">Primary 1</option>
+            <option value="Primary 2">Primary 2</option>
+            <option value="Primary 3">Primary 3</option>
+            <option value="Primary 4">Primary 4</option>
+            <option value="Primary 5">Primary 5</option>
+            <option value="Primary 6">Primary 6</option>
+            <option value="JSS 1">JSS 1</option>
+            <option value="JSS 2">JSS 2</option>
+            <option value="JSS 3">JSS 3</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="durationSubject">Subject</label>
+          <select id="durationSubject">
+            <option value="">Select Subject</option>
+            <option value="Algebra">Algebra</option>
+            <option value="Arithmetics">Arithmetics</option>
+            <option value="Statistics">Statistics</option>
+            <option value="Mensurations Ans Geometry">Mensurations Ans Geometry</option>
+            <option value="Verbal Reasoning">Verbal Reasoning</option>
+            <option value="Comprehension">Comprehension</option>
+            <option value="Grammar">Grammar</option>
+            <option value="Creative art">Creative art</option>
+            <option value="French">French</option>
+            <option value="Nature Studies">Nature Studies</option>
+            <option value="Phonics">Phonics</option>
+            <option value="Religion">Religion</option>
+            <option value="Creative Writing">Creative Writing</option>
+            <option value="Digital Technology">Digital Technology</option>
+            <option value="Literature">Literature</option>
+            <option value="Prevocational Studies">Prevocational Studies</option>
+            <option value="Basic Science">Basic Science</option>
+            <option value="Social Studies">Social Studies</option>
+            <option value="Computer">Computer</option>
+            <option value="Physics">Physics</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="Biology">Biology</option>
+            <option value="Geography">Geography</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="examDurationMinutes">Duration (minutes)</label>
+          <div class="duration-controls">
+            <input type="number" id="examDurationMinutes" class="duration-input" value="60" min="5" max="180">
+            <span style="line-height: 40px;">minutes</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="questionCount">Number of Questions</label>
+          <div class="duration-controls">
+            <input type="number" id="questionCount" class="duration-input" value="20" min="5" max="100">
+            <span style="line-height: 40px;">questions</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="submitButtonPercentage">Show Submit Button at</label>
+          <div class="duration-controls">
+            <input type="number" id="submitButtonPercentage" class="percentage-input" value="10" min="1" max="100">
+            <span style="line-height: 40px;">% of time remaining</span>
+          </div>
+          <div class="info">Submit button appears when this percentage of time remains</div>
+        </div>
+        <button onclick="saveExamSettings()" class="btn">Save Settings</button>
+        <div class="success" id="examSettingsStatus"></div>
+      </div>
+    </div>
+
+    <!-- Questions Tab -->
+    <div id="questionsTab" style="display: none;">
+      <h3>Exam Questions (From Google Sheets)</h3>
+      <div class="loading" id="questionsLoading">
+        <div class="loading-spinner"></div>
+        <p>Loading questions data...</p>
+      </div>
+      <div id="questionsList"></div>
+      <div style="margin-top: 20px;">
+        <button onclick="syncQuestions()" class="btn">Sync Questions from Google Sheets</button>
+        <div class="info" style="margin-top: 10px;">
+          Questions are automatically loaded from Google Sheets. Click sync to refresh.<br>
+          <strong>Note:</strong> Add an "ImageURL" column in your Google Sheet to include images in questions.
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Tab -->
+    <div id="resultsTab" style="display: none;">
+      <h3>Exam Results</h3>
+      <div class="loading" id="resultsLoading">
+        <div class="loading-spinner"></div>
+        <p>Loading results data...</p>
+      </div>
+
+      <!-- Results Filter -->
+      <div class="results-filter">
+        <div class="filter-group">
+          <label for="filterClass">Filter by Class</label>
+          <select id="filterClass" onchange="filterResults()">
+            <option value="">All Classes</option>
+            <option value="Primary 1">Primary 1</option>
+            <option value="Primary 2">Primary 2</option>
+            <option value="Primary 3">Primary 3</option>
+            <option value="Primary 4">Primary 4</option>
+            <option value="Primary 5">Primary 5</option>
+            <option value="Primary 6">Primary 6</option>
+            <option value="JSS 1">JSS 1</option>
+            <option value="JSS 2">JSS 2</option>
+            <option value="JSS 3">JSS 3</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filterSubject">Filter by Subject</label>
+          <select id="filterSubject" onchange="filterResults()">
+            <option value="">All Subjects</option>
+            <option value="Algebra">Algebra</option>
+            <option value="Arithmetics">Arithmetics</option>
+            <option value="Statistics">Statistics</option>
+            <option value="Mensurations Ans Geometry">Mensurations Ans Geometry</option>
+            <option value="Verbal Reasoning">Verbal Reasoning</option>
+            <option value="Comprehension">Comprehension</option>
+            <option value="Grammar">Grammar</option>
+            <option value="Creative art">Creative art</option>
+            <option value="French">French</option>
+            <option value="Nature Studies">Nature Studies</option>
+            <option value="Phonics">Phonics</option>
+            <option value="Religion">Religion</option>
+            <option value="Creative Writing">Creative Writing</option>
+            <option value="Digital Technology">Digital Technology</option>
+            <option value="Literature">Literature</option>
+            <option value="Prevocational Studies">Prevocational Studies</option>
+            <option value="Basic Science">Basic Science</option>
+            <option value="Social Studies">Social Studies</option>
+            <option value="Computer">Computer</option>
+            <option value="Physics">Physics</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="Biology">Biology</option>
+            <option value="Geography">Geography</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filterDate">Filter by Date</label>
+          <select id="filterDate" onchange="filterResults()">
+            <option value="">All Dates</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+            <option value="last7">Last 7 Days</option>
+            <option value="last30">Last 30 Days</option>
+          </select>
+        </div>
+        <button onclick="loadAdminResults()" class="btn" style="width: auto; min-width: 120px;">Refresh Results</button>
+      </div>
+
+      <div id="resultsDisplay"></div>
+      <div style="margin-top: 20px;">
+        <button onclick="clearResults()" class="btn-secondary">Clear All Results</button>
+        <button onclick="exportResults()" class="btn">Export Results as CSV</button>
+        <button onclick="uploadResultsToGoogleSheets()" class="btn" style="background-color: #34A853;">Upload to Google Sheets</button>
+      </div>
+    </div>
+
+    <!-- Retake Permissions Tab -->
+    <div id="retakesTab" style="display: none;">
+      <h3>Retake Exam Permissions</h3>
+      <div class="loading" id="retakesLoading">
+        <div class="loading-spinner"></div>
+        <p>Loading retake requests...</p>
+      </div>
+      <div id="retakesList"></div>
+      <div style="margin-top: 20px; padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
+        <h4>Grant Permission Manually</h4>
+        <div class="form-group">
+          <label for="permissionStudent">Student Admission</label>
+          <input type="text" id="permissionStudent" placeholder="e.g., SMA2024001">
+        </div>
+        <div class="form-group">
+          <label for="permissionClass">Class</label>
+          <select id="permissionClass">
+            <option value="">Select Class</option>
+            <option value="Primary 1">Primary 1</option>
+            <option value="Primary 2">Primary 2</option>
+            <option value="Primary 3">Primary 3</option>
+            <option value="Primary 4">Primary 4</option>
+            <option value="Primary 5">Primary 5</option>
+            <option value="Primary 6">Primary 6</option>
+            <option value="JSS 1">JSS 1</option>
+            <option value="JSS 2">JSS 2</option>
+            <option value="JSS 3">JSS 3</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="permissionSubject">Subject</label>
+          <select id="permissionSubject">
+            <option value="">Select Subject</option>
+            <option value="Algebra">Algebra</option>
+            <option value="Arithmetics">Arithmetics</option>
+            <option value="Statistics">Statistics</option>
+            <option value="Mensurations Ans Geometry">Mensurations Ans Geometry</option>
+            <option value="Verbal Reasoning">Verbal Reasoning</option>
+            <option value="Comprehension">Comprehension</option>
+            <option value="Grammar">Grammar</option>
+            <option value="Creative art">Creative art</option>
+            <option value="French">French</option>
+            <option value="Nature Studies">Nature Studies</option>
+            <option value="Phonics">Phonics</option>
+            <option value="Religion">Religion</option>
+            <option value="Creative Writing">Creative Writing</option>
+            <option value="Digital Technology">Digital Technology</option>
+            <option value="Literature">Literature</option>
+            <option value="Prevocational Studies">Prevocational Studies</option>
+            <option value="Basic Science">Basic Science</option>
+            <option value="Social Studies">Social Studies</option>
+            <option value="Computer">Computer</option>
+            <option value="Physics">Physics</option>
+            <option value="Chemistry">Chemistry</option>
+            <option value="Biology">Biology</option>
+            <option value="Geography">Geography</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button onclick="grantRetakePermission()" class="btn">Grant Permission</button>
+          <button onclick="revokeRetakePermission()" class="btn-secondary">Revoke Permission</button>
+        </div>
+        <div class="success" id="permissionStatus"></div>
+      </div>
+    </div>
+
+    <!-- Settings Tab -->
+    <div id="settingsTab" style="display: none;">
+      <h3>System Settings</h3>
+
+      <div style="margin-top: 20px; padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
+        <h4>Subject Management</h4>
+
+        <div class="subject-info">
+          <h5>Current Configuration:</h5>
+          <p><strong>Primary School:</strong> <span id="currentPrimarySubjects"></span></p>
+          <p><strong>Junior Secondary:</strong> <span id="currentJSSSubjects"></span></p>
+        </div>
+
+        <div class="form-group">
+          <label for="primarySubjects">Primary School Subjects</label>
+          <textarea id="primarySubjects" rows="3" placeholder="Enter subjects separated by commas&#10;e.g., Mathematics, English Language, Basic Science, Social Studies"></textarea>
+          <div class="info">One subject per line or separated by commas</div>
+        </div>
+
+        <div class="form-group">
+          <label for="primaryQuestionLimits">Primary School Question Limits</label>
+          <textarea id="primaryQuestionLimits" rows="3" placeholder="Format: Subject: Number&#10;e.g.,&#10;Mathematics: 20&#10;English Language: 15&#10;Basic Science: 25"></textarea>
+          <div class="info">Set maximum questions per subject. Leave empty for no limit.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="jssSubjects">JSS Subjects</label>
+          <textarea id="jssSubjects" rows="3" placeholder="Enter subjects separated by commas&#10;e.g., Mathematics, English Studies, Basic Science, Basic Technology"></textarea>
+          <div class="info">One subject per line or separated by commas</div>
+        </div>
+
+        <div class="form-group">
+          <label for="jssQuestionLimits">JSS Question Limits</label>
+          <textarea id="jssQuestionLimits" rows="3" placeholder="Format: Subject: Number&#10;e.g.,&#10;Mathematics: 30&#10;English Studies: 20&#10;Basic Science: 25"></textarea>
+          <div class="info">Set maximum questions per subject. Leave empty for no limit.</div>
+        </div>
+
+        <button onclick="saveSubjectSettings()" class="btn">Save Subject Settings</button>
+        <div style="margin-top: 15px; display: flex; gap: 10px;">
+          <button onclick="resetSubjectSettings()" class="btn-secondary">Reset to Defaults</button>
+          <button onclick="exportSubjectSettings()" class="btn-secondary">Export Settings</button>
+          <button onclick="importSubjectSettings()" class="btn-secondary">Import Settings</button>
+        </div>
+        <input type="file" id="importSubjectFile" accept=".json" style="display: none;" onchange="handleSubjectImport(event)">
+        <div class="success" id="subjectSettingsStatus"></div>
+      </div>
+
+      <div style="margin-top: 30px; padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
+        <h4>Google Sheets Integration</h4>
+        <div class="form-group">
+          <label for="studentsSheetUrl">Students Sheet URL (CSV)</label>
+          <input type="text" id="studentsSheetUrl">
+          <div class="info">Publish sheet as CSV and paste the URL here</div>
+        </div>
+        <div class="form-group">
+          <label for="questionsSheetUrl">Questions Sheet URL (CSV)</label>
+          <input type="text" id="questionsSheetUrl">
+          <div class="info">Publish sheet as CSV and paste the URL here</div>
+        </div>
+        <div class="form-group">
+          <label for="autoSaveSheetUrl">Auto-Save Results Sheet URL</label>
+          <input type="text" id="autoSaveSheetUrl">
+          <div class="info">Google Apps Script Web App URL for auto-saving results</div>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+          <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="autoSaveEnabled">
+            <span>Enable Auto-Save to Google Sheets</span>
+          </label>
+        </div>
+
+        <!-- Connection Test Button -->
+        <div style="margin-top: 20px; padding: 15px; background-color: #e8f5e8; border-radius: 5px;">
+          <h5 style="margin-top: 0;">Connection Test</h5>
+          <button onclick="testGoogleSheetsConnection()" class="btn" style="background-color: #2196F3; width: auto;">
+            Test Google Sheets Connection
+          </button>
+          <div id="connectionTestResult" class="info" style="margin-top: 10px;"></div>
+        </div>
+
+        <button onclick="saveSheetUrls()" class="btn">Save URLs</button>
+        <div class="success" id="urlsStatus"></div>
+      </div>
+
+      <div style="margin-top: 30px; padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
+        <h4>Admin Password</h4>
+        <div class="form-group">
+          <label for="currentPassword">Current Password</label>
+          <input type="password" id="currentPassword" placeholder="Enter current password">
+        </div>
+        <div class="form-group">
+          <label for="newPassword">New Password</label>
+          <input type="password" id="newPassword" placeholder="Enter new password">
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm New Password</label>
+          <input type="password" id="confirmPassword" placeholder="Confirm new password">
+        </div>
+        <button onclick="changePassword()" class="btn">Change Password</button>
+        <div class="success" id="passwordStatus"></div>
+        <div class="info" style="margin-top: 10px;">
+          Default password:SMA/2019/0001<br>
+          Password is stored locally in your browser.
+        </div>
+      </div>
+
+      <div style="margin-top: 30px; padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
+        <h4>Data Management</h4>
+        <button onclick="backupData()" class="btn">Backup All Data</button>
+        <button onclick="document.getElementById('restoreFile').click()" class="btn-secondary" style="margin-top: 10px;">Restore from Backup</button>
+        <input type="file" id="restoreFile" accept=".json" style="display: none;" onchange="restoreData(event)">
+        <div class="success" id="backupStatus"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Portal Content -->
+<section class="hero">
+  <h2>Official Exam Portal</h2>
+  <p>Select your class to access available examinations</p>
+</section>
+
+<div class="selector-group">
+<select id="levelSelect" class="select-box">
+  <option value="">Choose School Level</option>
+  <option value="primary">Primary School</option>
+  <option value="jss">Junior Secondary School</option>
+</select>
+
+<select id="classSelect" class="select-box" style="display:none;">
+  <option value="">Select Your Class</option>
+</select>
+</div>
+
+<div id="classGrid"></div>
+<div id="subjectGrid"></div>
+
+<footer>
+  <p><strong>Superior Mind Academy</strong></p>
+  <p>Excellence Through Knowledge</p>
+  <p>CBT Platform | Niger, Minna, Nigeria</p>
+  <p>&copy; 2025 SMA – All Rights Reserved</p>
+</footer>
+
+
+<script src="js/script.js"></script>
+
+
+
+<!-- <script>
+
+</script> -->
+
+</body>
+</html>

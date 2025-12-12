@@ -1,0 +1,53 @@
+:root{
+  --navy:#002B5B;
+  --red:#A50104;
+  --cream:#F8F5F0;
+  --teal:#159895;
+}
+
+body{
+ margin:0;
+ background:var(--cream);
+ font-family: Arial, sans-serif;
+ text-align:center;
+}
+
+header{
+ background:var(--navy);
+ color:white;
+ padding:20px;
+}
+
+.grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+ gap:15px;
+ padding:20px;
+}
+
+button, select{
+ padding:12px;
+ border:none;
+ border-radius:10px;
+ font-size:16px;
+ background:var(--teal);
+ color:white;
+ cursor:pointer;
+}
+
+select{
+ background:white;
+ color:black;
+}
+
+button:hover{
+ background:var(--red);
+}
+
+h2{ color:var(--navy); }
+
+.hidden{ display:none; }
+
+.back-btn{
+ background:var(--navy);
+}
